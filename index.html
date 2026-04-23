@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Арча — Меню</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #2D5016;
+  --green-dark: #1e3710;
+  --green-light: #3d6b1f;
+  --gold: #C9A84C;
+  --gold-light: #e0c06a;
+  --gold-pale: #f5ead0;
+  --white: #ffffff;
+  --bg: #f8f6f1;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 2px 16px rgba(45,80,22,0.10);
+  --shadow-lg: 0 8px 32px rgba(45,80,22,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overscroll-behavior: none;
+}
+
+body { max-width: 480px; margin: 0 auto; position: relative; min-height: 100vh; }
+
+/* ── SCREENS ─────────────────────────────────────────────── */
+.screen { display: none; min-height: 100dvh; }
+.screen.active { display: block; }
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.header {
+  background: var(--green);
+  padding: 14px 18px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: -1px;
+  font-style: italic;
+}
+.table-pill {
+  background: var(--gold);
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 30px;
+  letter-spacing: 0.2px;
+}
+
+/* ── CATEGORY TABS ───────────────────────────────────────── */
+.cats {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cats::-webkit-scrollbar { display: none; }
+.cat-btn {
+  flex-shrink: 0;
+  padding: 7px 16px;
+  border-radius: 30px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: rgba(255,255,255,0.65);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.cat-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--green-dark);
+}
+
+/* ── MENU GRID ───────────────────────────────────────────── */
+.menu-list {
+  padding: 14px 14px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dish-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.dish-card:active { transform: scale(0.985); }
+.dish-card.stopped { opacity: 0.55; }
+
+.dish-img {
+  width: 108px;
+  height: 108px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+.dish-body {
+  flex: 1;
+  padding: 12px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.dish-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.dish-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dish-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.dish-price {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--green);
+}
+.dish-price .unit { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+.add-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s, background 0.15s;
+}
+.add-btn:active { transform: scale(0.88); }
+
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  background: transparent;
+  color: var(--green);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.qty-btn.plus { background: var(--green); color: #fff; }
+.qty-btn:active { transform: scale(0.88); }
+.qty-val {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  color: var(--green);
+}
+
+.stop-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #dc2626;
+  padding: 3px 8px;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+
+/* ── FLOATING CART BTN ───────────────────────────────────── */
+.cart-float {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  width: calc(100% - 28px);
+  max-width: 452px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(45,80,22,0.45);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  z-index: 200;
+  font-family: 'Inter', sans-serif;
+}
+.cart-float.hidden {
+  transform: translateX(-50%) translateY(90px);
+  opacity: 0;
+  pointer-events: none;
+}
+.cart-float-left { display: flex; align-items: center; gap: 10px; }
+.cart-num {
+  background: var(--gold);
+  color: var(--green-dark);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cart-float-label { font-size: 15px; font-weight: 700; }
+.cart-float-price { font-size: 15px; font-weight: 800; color: var(--gold); }
+
+/* ── CART SCREEN ─────────────────────────────────────────── */
+.cart-header {
+  background: var(--green);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.back-btn:active { background: rgba(255,255,255,0.3); }
+.cart-header-title { font-size: 19px; font-weight: 700; }
+
+.cart-body { padding: 14px 14px 0; }
+
+.cart-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 10px;
+}
+.cart-item-img {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.cart-item-sub { font-size: 12px; color: var(--muted); }
+.cart-item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.c-qty-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%; border: none;
+  font-size: 18px; font-weight: 700;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.15s;
+}
+.c-qty-btn:active { transform: scale(0.88); }
+.c-qty-btn.minus { background: #f3f4f6; color: var(--text); }
+.c-qty-btn.plus  { background: var(--green); color: #fff; }
+.c-qty-val { font-size: 16px; font-weight: 700; min-width: 22px; text-align: center; }
+
+.comment-wrap {
+  padding: 0 14px 14px;
+}
+.comment-label {
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  margin-bottom: 8px; display: block;
+}
+.comment-ta {
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  color: var(--text);
+  background: var(--card);
+}
+.comment-ta:focus { border-color: var(--green); }
+.comment-ta::placeholder { color: #9ca3af; }
+
+.cart-total-block {
+  margin: 0 14px 14px;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cart-total-label { font-size: 15px; color: var(--muted); font-weight: 500; }
+.cart-total-sum { font-size: 22px; font-weight: 900; color: var(--green); }
+
+.submit-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 0 14px 24px;
+  padding: 17px;
+  background: var(--gold);
+  color: var(--green-dark);
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(201,168,76,0.45);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── CONFIRM SCREEN ──────────────────────────────────────── */
+.confirm-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px 40px;
+  text-align: center;
+}
+.confirm-emoji {
+  font-size: 72px;
+  margin-bottom: 18px;
+  animation: pop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes pop {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+.confirm-title {
+  font-size: 24px; font-weight: 900; color: var(--green);
+  margin-bottom: 8px; line-height: 1.2;
+}
+.confirm-sub {
+  font-size: 15px; color: var(--muted); margin-bottom: 32px;
+}
+.confirm-card {
+  width: 100%;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  text-align: left;
+  margin-bottom: 20px;
+}
+.confirm-card-title {
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14.5px;
+}
+.confirm-row:last-child { border-bottom: none; }
+.confirm-row-name { color: var(--text); font-weight: 500; }
+.confirm-row-price { font-weight: 700; color: var(--green); }
+.confirm-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 2px solid var(--green);
+  font-size: 17px;
+  font-weight: 900;
+}
+.confirm-comment {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  font-style: italic;
+}
+.add-more-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 15.5px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+.add-more-btn:active { transform: scale(0.98); }
+
+/* ── LOADING OVERLAY ─────────────────────────────────────── */
+.loader {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(248,246,241,0.88);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  backdrop-filter: blur(4px);
+}
+.loader.show { display: flex; }
+.spinner {
+  width: 46px; height: 46px;
+  border: 4px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { font-size: 15px; font-weight: 600; color: var(--green); }
+
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: #1a1a1a;
+  color: #fff;
+  padding: 11px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.28s;
+  pointer-events: none;
+  z-index: 500;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <div class="loader-text">Отправляем заказ…</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ══ SCREEN 1: MENU ══════════════════════════════════════ -->
+<div id="s-menu" class="screen active">
+  <header class="header">
+    <div class="header-row">
+      <div class="logo">Арча</div>
+      <div class="table-pill" id="tablePill">Столик №1</div>
+    </div>
+    <div class="cats" id="cats"></div>
+  </header>
+  <div class="menu-list" id="menuList"></div>
+</div>
+
+<!-- ══ SCREEN 2: CART ══════════════════════════════════════ -->
+<div id="s-cart" class="screen">
+  <div class="cart-header">
+    <button class="back-btn" onclick="showScreen('menu')">&#8592;</button>
+    <div class="cart-header-title">Корзина</div>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="comment-wrap">
+    <label class="comment-label">💬 Комментарий к заказу</label>
+    <textarea class="comment-ta" id="commentTa" rows="3" placeholder="Без лука, соус отдельно…"></textarea>
+  </div>
+  <div class="cart-total-block">
+    <span class="cart-total-label">Итого:</span>
+    <span class="cart-total-sum" id="cartTotalSum">0 сом</span>
+  </div>
+  <button class="submit-btn" id="submitBtn" onclick="submitOrder()">✅ Отправить заказ официанту</button>
+</div>
+
+<!-- ══ SCREEN 3: CONFIRM ═══════════════════════════════════ -->
+<div id="s-confirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-emoji">✅</div>
+    <div class="confirm-title">Заказ принят!</div>
+    <div class="confirm-sub">Официант скоро подойдёт к вашему столику</div>
+    <div class="confirm-card" id="confirmCard"></div>
+    <button class="add-more-btn" onclick="addMore()">＋ Добавить ещё блюдо</button>
+  </div>
+</div>
+
+<!-- ══ FLOATING CART BUTTON ════════════════════════════════ -->
+<button class="cart-float hidden" id="cartFloat" onclick="showScreen('cart')">
+  <div class="cart-float-left">
+    <div class="cart-num" id="cartNum">0</div>
+    <span class="cart-float-label">🛒 Корзина</span>
+  </div>
+  <span class="cart-float-price" id="cartFloatPrice">0 сом</span>
+</button>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+const CONFIG = {
+  BOT_TOKEN: "8707593686:AAFTOAJ8OFjW-eNQASunUdCJVC-F1gTf5tw",
+  WAITERS: {
+    "1,2,3,4":    { name: "Айгуль", chat_id: "584681816" },
+    "5,6,7,8":    { name: "Бакыт",  chat_id: "584681816" },
+    "9,10,11,12": { name: "Мира",   chat_id: "584681816" }
+  }
+};
+
+// ── MENU DATA ─────────────────────────────────────────────
+const MENU_DATA = {
+  "Завтраки": [
+    { id:1,  name:"Каша овсяная",  desc:"Нежная овсяная каша с мёдом и фруктами",        price:180, img:"https://picsum.photos/seed/oatmeal123/400/300",  category:"Завтраки" },
+    { id:2,  name:"Омлет",         desc:"Пышный омлет с зеленью и помидорами",            price:250, img:"https://picsum.photos/seed/omelette456/400/300", category:"Завтраки" },
+    { id:3,  name:"Блины",         desc:"Тонкие блины со сметаной и вареньем",            price:220, img:"https://picsum.photos/seed/pancake789/400/300",  category:"Завтраки" },
+    { id:4,  name:"Яичница",       desc:"Яичница с беконом и тостом",                     price:200, img:"https://picsum.photos/seed/eggs101/400/300",     category:"Завтраки" }
+  ],
+  "Основные блюда": [
+    { id:5,  name:"Лагман",        desc:"Традиционная лапша с мясом и овощами",           price:450, img:"https://picsum.photos/seed/noodles202/400/300",  category:"Основные блюда" },
+    { id:6,  name:"Манты",         desc:"Паровые пельмени с рубленым мясом и луком",      price:380, img:"https://picsum.photos/seed/dumpling303/400/300", category:"Основные блюда" },
+    { id:7,  name:"Шашлык",        desc:"Сочный шашлык из баранины на углях",             price:550, img:"https://picsum.photos/seed/bbq404/400/300",      category:"Основные блюда" },
+    { id:8,  name:"Плов",          desc:"Традиционный плов с рисом и морковью",           price:400, img:"https://picsum.photos/seed/rice505/400/300",     category:"Основные блюда" },
+    { id:9,  name:"Самса",         desc:"Слоёная выпечка с мясной начинкой",              price:150, img:"https://picsum.photos/seed/pie606/400/300",      category:"Основные блюда" },
+    { id:10, name:"Бешбармак",     desc:"Национальное блюдо из мяса и лапши",             price:600, img:"https://picsum.photos/seed/meat707/400/300",     category:"Основные блюда" }
+  ],
+  "Напитки": [
+    { id:11, name:"Чай",           desc:"Ароматный чай на травах",                        price:120, img:"https://picsum.photos/seed/tea808/400/300",      category:"Напитки" },
+    { id:12, name:"Кофе",          desc:"Свежесваренный кофе эспрессо",                   price:180, img:"https://picsum.photos/seed/coffee909/400/300",   category:"Напитки" },
+    { id:13, name:"Морс",          desc:"Домашний морс из свежих ягод",                   price:150, img:"https://picsum.photos/seed/juice111/400/300",    category:"Напитки" },
+    { id:14, name:"Вода",          desc:"Минеральная вода",                                price:80,  img:"https://picsum.photos/seed/water222/400/300",   category:"Напитки" },
+    { id:15, name:"Компот",        desc:"Компот из сухофруктов",                           price:100, img:"https://picsum.photos/seed/drink333/400/300",   category:"Напитки" }
+  ],
+  "Десерты": [
+    { id:16, name:"Баурсаки",      desc:"Жареные пончики из дрожжевого теста",            price:200, img:"https://picsum.photos/seed/donut444/400/300",    category:"Десерты" },
+    { id:17, name:"Чак-чак",       desc:"Восточная сладость из теста с мёдом",            price:250, img:"https://picsum.photos/seed/sweet555/400/300",    category:"Десерты" },
+    { id:18, name:"Мороженое",     desc:"Шариковое мороженое с топпингами",               price:180, img:"https://picsum.photos/seed/icecream666/400/300", category:"Десерты" }
+  ]
+};
+
+// ── STATE ─────────────────────────────────────────────────
+let cart = {};          // { id: { item, qty } }
+let currentCat = "Завтраки";
+let tableNum = 1;
+let stopList = [];
+let priceOverrides = {};
+
+// ── INIT ──────────────────────────────────────────────────
+function init() {
+  const p = new URLSearchParams(window.location.search);
+  tableNum = parseInt(p.get('table')) || 1;
+  document.getElementById('tablePill').textContent = `Столик №${tableNum}`;
+
+  stopList       = JSON.parse(localStorage.getItem('archa_stoplist') || '[]');
+  priceOverrides = JSON.parse(localStorage.getItem('archa_prices')   || '{}');
+
+  renderCats();
+  renderMenu();
+}
+
+function getAllItems() {
+  return Object.values(MENU_DATA).flat();
+}
+
+function itemPrice(item) {
+  return priceOverrides[item.id] !== undefined ? priceOverrides[item.id] : item.price;
+}
+
+// ── CATEGORIES ────────────────────────────────────────────
+function renderCats() {
+  const el = document.getElementById('cats');
+  el.innerHTML = Object.keys(MENU_DATA).map(cat =>
+    `<button class="cat-btn ${cat===currentCat?'active':''}" onclick="selectCat('${cat}')">${cat}</button>`
+  ).join('');
+}
+
+function selectCat(cat) {
+  currentCat = cat;
+  renderCats();
+  renderMenu();
+}
+
+// ── MENU RENDER ───────────────────────────────────────────
+function renderMenu() {
+  const items = MENU_DATA[currentCat];
+  const el = document.getElementById('menuList');
+  el.innerHTML = items.map(item => {
+    const stopped = stopList.includes(item.id);
+    const qty     = cart[item.id]?.qty || 0;
+    const price   = itemPrice(item);
+
+    const actionHtml = stopped
+      ? `<span class="stop-badge">Нет в наличии</span>`
+      : qty === 0
+        ? `<button class="add-btn" onclick="addItem(${item.id})">+</button>`
+        : `<div class="qty-ctrl">
+             <button class="qty-btn" onclick="removeItem(${item.id})">−</button>
+             <span class="qty-val">${qty}</span>
+             <button class="qty-btn plus" onclick="addItem(${item.id})">+</button>
+           </div>`;
+
+    return `
+      <div class="dish-card ${stopped?'stopped':''}">
+        <img class="dish-img" src="${item.img}" alt="${item.name}" loading="lazy">
+        <div class="dish-body">
+          <div class="dish-name">${item.name}</div>
+          <div class="dish-desc">${item.desc}</div>
+          <div class="dish-footer">
+            <div class="dish-price">${price} <span class="unit">сом</span></div>
+            ${actionHtml}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── CART LOGIC ────────────────────────────────────────────
+function addItem(id) {
+  const item = getAllItems().find(i => i.id === id);
+  if (!item) return;
+  if (!cart[id]) cart[id] = { item, qty: 0 };
+  cart[id].qty++;
+  updateFloatBtn();
+  renderMenu();
+  // subtle pulse
+  const btn = document.getElementById('cartFloat');
+  btn.style.transition = 'none';
+  btn.style.transform = 'translateX(-50%) scale(1.06)';
+  setTimeout(() => { btn.style.transition = ''; btn.style.transform = 'translateX(-50%)'; }, 130);
+}
+
+function removeItem(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty <= 0) delete cart[id];
+  updateFloatBtn();
+  renderMenu();
+}
+
+function cartCount() { return Object.values(cart).reduce((s,c) => s + c.qty, 0); }
+function cartTotal() { return Object.values(cart).reduce((s,c) => s + itemPrice(c.item) * c.qty, 0); }
+
+function updateFloatBtn() {
+  const n = cartCount();
+  const t = cartTotal();
+  document.getElementById('cartNum').textContent = n;
+  document.getElementById('cartFloatPrice').textContent = `${t} сом`;
+  document.getElementById('cartFloat').classList.toggle('hidden', n === 0);
+}
+
+// ── SCREENS ───────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`s-${name}`).classList.add('active');
+
+  const floatBtn = document.getElementById('cartFloat');
+  if (name === 'menu') {
+    updateFloatBtn();
+    // Refresh stop list & prices in case admin changed them
+    stopList       = JSON.parse(localStorage.getItem('archa_stoplist') || '[]');
+    priceOverrides = JSON.parse(localStorage.getItem('archa_prices')   || '{}');
+    renderMenu();
+  } else if (name === 'cart') {
+    floatBtn.classList.add('hidden');
+    renderCart();
+  } else if (name === 'confirm') {
+    floatBtn.classList.add('hidden');
+  }
+}
+
+// ── CART RENDER ───────────────────────────────────────────
+function renderCart() {
+  const items = Object.values(cart);
+  const body  = document.getElementById('cartBody');
+
+  if (!items.length) {
+    body.innerHTML = `<p style="text-align:center;padding:40px 20px;color:var(--muted)">Корзина пуста</p>`;
+  } else {
+    body.innerHTML = items.map(({item, qty}) => {
+      const price = itemPrice(item);
+      return `
+        <div class="cart-item">
+          <img class="cart-item-img" src="${item.img}" alt="${item.name}" loading="lazy">
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-sub">${price} × ${qty} = ${price*qty} сом</div>
+          </div>
+          <div class="cart-item-right">
+            <button class="c-qty-btn minus" onclick="cartMinus(${item.id})">−</button>
+            <span class="c-qty-val">${qty}</span>
+            <button class="c-qty-btn plus" onclick="cartPlus(${item.id})">+</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('cartTotalSum').textContent = `${cartTotal()} сом`;
+}
+
+function cartPlus(id)  { addItem(id);    renderCart(); }
+function cartMinus(id) { removeItem(id); renderCart(); if (!cartCount()) showScreen('menu'); }
+
+// ── WAITER LOOKUP ─────────────────────────────────────────
+function getWaiter(table) {
+  for (const [zone, w] of Object.entries(CONFIG.WAITERS)) {
+    if (zone.split(',').map(Number).includes(table)) return w;
+  }
+  return { name: "Дежурный", chat_id: "" };
+}
+
+// ── SUBMIT ORDER ──────────────────────────────────────────
+async function submitOrder() {
+  const items = Object.values(cart);
+  if (!items.length) { showToast('Корзина пуста!'); return; }
+
+  const comment = document.getElementById('commentTa').value.trim();
+  const waiter  = getWaiter(tableNum);
+  const total   = cartTotal();
+  const now     = new Date();
+  const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+
+  // Build message
+  const lines = items.map(({item,qty}) =>
+    `- ${item.name} x${qty} — ${itemPrice(item)*qty} сом`).join('\n');
+
+  const msg = `🔔 <b>НОВЫЙ ЗАКАЗ</b>\n📍 Столик №${tableNum}\n⏰ ${timeStr}\n\n🍽 <b>Заказ:</b>\n${lines}\n\n💰 <b>Итого:</b> ${total} сом` +
+              (comment ? `\n💬 <b>Комментарий:</b> ${comment}` : '');
+
+  // Save to localStorage
+  const order = {
+    id: `order_${Date.now()}`,
+    tableNum,
+    waiterName: waiter.name,
+    waiterChatId: waiter.chat_id,
+    items: items.map(({item,qty}) => ({ ...item, qty })),
+    total,
+    comment,
+    status: 'new',
+    time: now.toISOString()
+  };
+  const orders = JSON.parse(localStorage.getItem('archa_orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('archa_orders', JSON.stringify(orders));
+
+  // Telegram
+  document.getElementById('loader').classList.add('show');
+  document.getElementById('submitBtn').disabled = true;
+  try {
+    if (CONFIG.BOT_TOKEN && waiter.chat_id) {
+      const tgRes = await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: waiter.chat_id, text: msg, parse_mode: 'HTML' })
+      });
+      const tgData = await tgRes.json();
+      if (!tgRes.ok || !tgData.ok) {
+        throw new Error(tgData.description || `HTTP ${tgRes.status}`);
+      }
+    } else {
+      throw new Error('Не заполнены BOT_TOKEN или chat_id');
+    }
+  } catch(e) {
+    console.warn('Telegram:', e);
+    showToast('Ошибка отправки в Telegram');
+  }
+  document.getElementById('loader').classList.remove('show');
+  document.getElementById('submitBtn').disabled = false;
+
+  // Show confirm
+  renderConfirm(items, total, comment);
+  showScreen('confirm');
+}
+
+function renderConfirm(items, total, comment) {
+  const el = document.getElementById('confirmCard');
+  const rows = items.map(({item,qty}) => `
+    <div class="confirm-row">
+      <span class="confirm-row-name">${item.name} ×${qty}</span>
+      <span class="confirm-row-price">${itemPrice(item)*qty} сом</span>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="confirm-card-title">🧾 Состав заказа</div>
+    ${rows}
+    <div class="confirm-total-row">
+      <span>Итого</span>
+      <span>${total} сом</span>
+    </div>
+    ${comment ? `<div class="confirm-comment">💬 ${comment}</div>` : ''}`;
+}
+
+function addMore() {
+  cart = {};
+  document.getElementById('commentTa').value = '';
+  updateFloatBtn();
+  showScreen('menu');
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(text) {
+  const el = document.getElementById('toast');
+  el.textContent = text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ── START ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
